@@ -5,7 +5,7 @@ before_script:
   - npm install
 script:
   - npm run lint
-  - npm test:cov
+  - npm run test:cov
 branches:
   only:
     - main
