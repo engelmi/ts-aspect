@@ -1,6 +1,6 @@
 {
   "name": "ts-aspect",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -9,7 +9,8 @@
   "author": "Michael Engel",
   "license": "ISC",
   "keywords": [
-    "Aspect Oriented Programming", "AOP"
+    "Aspect Oriented Programming",
+    "AOP"
   ],
   "scripts": {
     "start": "npm run build && node build/index.js",
