@@ -8,7 +8,6 @@ One application of AOP is the encapsulation of cross-cutting concerns, like logg
 
 
 ## Installation
----
 To get started, install `ts-aspect` with npm.
 ```
 npm install ts-aspect
@@ -16,7 +15,6 @@ npm install ts-aspect
 
 
 ## Usage
----
 An aspect can be injected to the `target` class or object via
 ```javascript
 function inject(target: any, aspect: any, advice: Advice, pointcut: string): void
@@ -33,7 +31,6 @@ For example, the AfterReturn enables you to access the return value of the origi
 Finally, the `pointcut` parameter describes the where - so basically, for which functions the `aspect` should be executed. For this a regular expression can be used. 
 
 ## Example
----
 Assume you have the following `Calculator` class: 
 ```javascript
 class Calculator {
