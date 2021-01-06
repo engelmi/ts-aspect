@@ -8,6 +8,9 @@
   ],
   "author": "Michael Engel",
   "license": "ISC",
+  "keywords": [
+    "Aspect Oriented Programming", "AOP"
+  ],
   "scripts": {
     "start": "npm run build && node build/index.js",
     "start:watch": "nodemon",
