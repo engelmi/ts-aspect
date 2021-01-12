@@ -1,4 +1,4 @@
-import { Advice } from './advice.enum';
+import { Advice } from './advice';
 
 function getFunctionList(obj: any): string[] {
     const classFunctions = Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(
