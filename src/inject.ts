@@ -1,4 +1,4 @@
-import { Advice } from './advice';
+import { Advice } from './advice.enum';
 
 function getFunctionList(obj: any): string[] {
     const classFunctions = Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(
@@ -12,36 +12,38 @@ function getFunctionList(obj: any): string[] {
 }
 
 function injectAspect(target: any, aspect: any, advice: Advice, functionName: string): void {
-    const originalCode = target[functionName];
-    // eslint-disable-next-line no-param-reassign
-    target[functionName] = (...args: any[]) => {
-        if ([Advice.Before, Advice.Around].includes(advice)) {
-            aspect.apply(target, args);
-        }
-
-        let returnedValue;
-        try {
-            returnedValue = originalCode.apply(target, args);
-        } catch (error) {
-            if (advice === Advice.TryCatch) {
-                aspect.apply(target, [error, ...args]);
-            }
-        } finally {
-            if (advice === Advice.TryFinally) {
+    const originalCode = Reflect.get(target, functionName);
+    if (originalCode) {
+        const wrappedFunction = (...args: any[]) => {
+            if ([Advice.Before, Advice.Around].includes(advice)) {
                 aspect.apply(target, args);
             }
-        }
 
-        if ([Advice.After, Advice.Around].includes(advice)) {
-            aspect.apply(target, args);
-        }
+            let returnedValue;
+            try {
+                returnedValue = originalCode.apply(target, args);
+            } catch (error) {
+                if (advice === Advice.TryCatch) {
+                    aspect.apply(target, [error, ...args]);
+                }
+            } finally {
+                if (advice === Advice.TryFinally) {
+                    aspect.apply(target, args);
+                }
+            }
 
-        if (advice === Advice.AfterReturn) {
-            return aspect.apply(target, [returnedValue]);
-        }
+            if ([Advice.After, Advice.Around].includes(advice)) {
+                aspect.apply(target, args);
+            }
 
-        return returnedValue;
-    };
+            if (advice === Advice.AfterReturn) {
+                return aspect.apply(target, [returnedValue]);
+            }
+
+            return returnedValue;
+        };
+        Reflect.set(target, functionName, wrappedFunction);
+    }
 }
 
 export { getFunctionList, injectAspect };
