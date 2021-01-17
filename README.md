@@ -17,9 +17,13 @@ npm install ts-aspect
 ## Usage
 An aspect can be injected to the `target` class or object via
 ```javascript
-function inject(target: any, aspect: any, advice: Advice, pointcut: string): void
+function addAspect(target: any, methodName: string, advice: Advice, aspect: Aspect): void
 ```
-The `aspect` parameter is the actual behavior that extends the `target` code. When the `aspect` is about to be executed is defined by the `advice` parameter. Currently, the following advices are available in `ts-aspect`:
+or
+```javascript
+function addAspectToPointcut(target: any, pointcut: string, advice: Advice, aspect: Aspect): void
+```
+The `aspect` parameter is the actual behavior that extends the `target` code. When the `aspect` is about to be executed is defined by the `advice` parameter. Currently, the following advices are available:
 - Before
 - After
 - Around
@@ -52,24 +56,22 @@ class Calculator {
     public multiply(a: number, b: number) {
         return a * b;
     }
-
-    public modulo(a: number, b: number) {
-        return a % b;
-    }
 }
 ```
 
-The following function will simply log the arguments passed to it to the console: 
+The following aspect class will simply log the arguments passed to it to the console: 
 ```javascript
-function logArgsAspect(...args: any): void {
-    console.log(args);
+class LogAspect implements Aspect{
+    function execute(...args: any): void {
+        console.log(args);
+    }
 }
 ```
 
 Now the `logArgsAspect` can be injected to an instance of `Calculator`. In the following example, the aspect is supposed to be executed before running the actual business logic: 
 ```javascript
 const calculator = new Calculator();
-inject(calculator, logArgsAspect, Advice.Before, '.*');
+addAspectToPointcut(calculator, '.*', Advice.Before, new LogAspect());
 ```
 By defining the `pointcut` as `'.*'`, the `aspect` is run on the execution of any of the functions of the respective `Calculator` instance. Therefore, the following calls should all produce the output `[1, 2]`:
 ```javascript
@@ -77,15 +79,14 @@ calculator.add(1, 2);
 calculator.substract(1, 2);
 calculator.divide(1, 2);
 calculator.multiply(1, 2);
-calculator.modulo(1, 2);
 ```
 
-An aspect can also be applied in case of an exception: 
+An aspect can also be applied in case an exception occurs in the target code: 
 ```javascript
 const calculator = new Calculator();
-inject(calculator, logArgsAspect, Advice.TryCatch, 'divide');
+addAspect(calculator, 'divide', Advice.TryCatch, new LogAspect());
 calculator.divide(1, 0);
 ```
 In this case, the `divide` function throws the division by zero exception. Due to `Advice.TryCatch` the error is being caught and control is handed over to the aspect, which logs the error as well as both input parameters of the divide function call.  
 **Note:** 
-Because the aspect does not rethrow the exception, the handling will stop here. Rethrowing the error in the aspect is necessary if it is supposed to be handled elsewhere. 
+Because the aspect does not rethrow the exception implicitly, the handling will stop here. Rethrowing the error in the aspect is necessary if it is supposed to be handled elsewhere. 
