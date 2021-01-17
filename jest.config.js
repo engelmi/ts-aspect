@@ -5,7 +5,7 @@ module.exports = {
         '^.+\\.(t)s$': 'ts-jest',
     },
     coverageDirectory: 'coverage',
-    collectCoverageFrom: ['src/**/*.ts'],
+    collectCoverageFrom: ['src/**/*.ts', '!src/index.ts'],
     testEnvironment: 'node',
     coverageThreshold: {
         global: {

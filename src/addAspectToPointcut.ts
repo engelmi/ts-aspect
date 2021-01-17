@@ -6,8 +6,8 @@ import { getPointcutMethods } from './getPointcutMethods';
 export function addAspectToPointcut(
     target: any,
     pointcut: string,
-    aspect: Aspect,
     advice: Advice,
+    aspect: Aspect,
 ): void {
     const methods = getPointcutMethods(target, pointcut);
     methods.forEach(method => {
