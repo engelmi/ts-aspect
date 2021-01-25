@@ -13,6 +13,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "typeRoots" : ["./node_modules/@types", "./src/@types"],
+    "experimentalDecorators": true,
   }, 
   "include": [
     "src", "test"

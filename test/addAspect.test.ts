@@ -121,4 +121,8 @@ describe('addAspect', () => {
         expect(secondAspect.execute).toHaveBeenCalledTimes(1);
         expect(thirdAspect.execute).toHaveBeenCalledTimes(1);
     });
+
+    it('should propagate thrown error in original method', () => {
+        expect(() => calculator.divide(1, 0)).toThrow(Error);
+    });
 });
