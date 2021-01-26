@@ -55,4 +55,37 @@ describe('UseAspect', () => {
         expect(beforeAspect.execute).toHaveBeenCalledTimes(1);
         expect(afterAspect.execute).toHaveBeenCalledTimes(0);
     });
+
+    describe('using classes of an aspect', () => {
+        const mockFn = jest.fn().mockImplementation(() => {});
+
+        class SampleAspect implements Aspect {
+            execute(target: any, args: any[]) {
+                mockFn();
+            }
+        }
+
+        class SampleClass {
+            public constructor(private sampleId: number) {}
+
+            @UseAspect(Advice.Before, SampleAspect)
+            public getSampleId(): number {
+                return this.sampleId;
+            }
+        }
+
+        let sample: SampleClass;
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+
+            sample = new SampleClass(1);
+        });
+
+        it('should execute the aspect annotated', () => {
+            sample.getSampleId();
+
+            expect(mockFn).toHaveBeenCalledTimes(1);
+        });
+    });
 });
