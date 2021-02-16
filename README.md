@@ -15,7 +15,7 @@ npm install ts-aspect
 
 
 ## Usage
-An aspect can be injected to the `target` class or object via
+An aspect can be injected to the `target` class instance or object via
 ```javascript
 function addAspect(target: any, methodName: string, advice: Advice, aspect: Aspect): void
 ```
@@ -34,8 +34,22 @@ The `aspect` parameter is the actual behavior that extends the `target` code. Wh
 For example, the AfterReturn enables you to access the return value of the original function and execute additional logic on it (like logging). 
 Finally, the `pointcut` parameter describes the where - so basically, for which functions the `aspect` should be executed. For this a regular expression can be used. 
 
+Also, `ts-aspect` provides a method decorator to attach an aspect to a all instances of a class in a more declarative way:
+```javascript
+function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): MethodDecorator
+```
+
 ## Example
-Assume you have the following `Calculator` class: 
+Assume the following aspect class which simply logs the arguments passed to it to the console: 
+```javascript
+class LogAspect implements Aspect{
+    function execute(...args: any): void {
+        console.log(args);
+    }
+}
+```
+
+Also, we create the following `Calculator` class: 
 ```javascript
 class Calculator {
     public add(a: number, b: number) {
@@ -59,14 +73,6 @@ class Calculator {
 }
 ```
 
-The following aspect class will simply log the arguments passed to it to the console: 
-```javascript
-class LogAspect implements Aspect{
-    function execute(...args: any): void {
-        console.log(args);
-    }
-}
-```
 
 Now the `logArgsAspect` can be injected to an instance of `Calculator`. In the following example, the aspect is supposed to be executed before running the actual business logic: 
 ```javascript
@@ -90,3 +96,18 @@ calculator.divide(1, 0);
 In this case, the `divide` function throws the division by zero exception. Due to `Advice.TryCatch` the error is being caught and control is handed over to the aspect, which logs the error as well as both input parameters of the divide function call.  
 **Note:** 
 Because the aspect does not rethrow the exception implicitly, the handling will stop here. Rethrowing the error in the aspect is necessary if it is supposed to be handled elsewhere. 
+
+### UseAspect
+In addition, aspects can be added to a all class instances in a declarative manner by using the decorator `UseAspect`. Based on the Calculator example above, lets add another LogAspect to the `add` method so that the result gets logged to the console as well: 
+```javascript
+class Calculator {
+    @UseAspect(Advice.AfterReturn, SampleAspect)
+    public add(a: number, b: number) {
+        return a + b;
+    }
+    // ...
+}
+
+const calculator = new Calculator();
+calculator.add(1300, 37);
+```
