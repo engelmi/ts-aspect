@@ -101,7 +101,7 @@ Because the aspect does not rethrow the exception implicitly, the handling will 
 In addition, aspects can be added to a all class instances in a declarative manner by using the decorator `UseAspect`. Based on the Calculator example above, lets add another LogAspect to the `add` method so that the result gets logged to the console as well: 
 ```javascript
 class Calculator {
-    @UseAspect(Advice.AfterReturn, SampleAspect)
+    @UseAspect(Advice.AfterReturn, LogAspect)
     public add(a: number, b: number) {
         return a + b;
     }
@@ -111,3 +111,4 @@ class Calculator {
 const calculator = new Calculator();
 calculator.add(1300, 37);
 ```
+The aspect passed to the decorator can be either a class which provides a constructor with no arguments or an instance of an aspect. 
