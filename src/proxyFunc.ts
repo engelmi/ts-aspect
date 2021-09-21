@@ -1,23 +1,25 @@
 import { Advice } from './advice.enum';
 import { MethodContainer } from './TsAspectContainer';
 
-export function proxyFunc(target: any, methodContainer: MethodContainer, ...args: any): any {
+export const proxyFunc = (target: any, methodContainer: MethodContainer, ...args: any): any => {
     const { originalMethod, adviceAspectMap } = methodContainer;
+    let returnedValue: any = undefined;
+    let modifiedArgs: any = undefined;
 
     if (adviceAspectMap.has(Advice.Before)) {
         adviceAspectMap.get(Advice.Before)?.forEach(aspect => {
-            aspect.execute(target, args);
-        });
-    }
-    if (adviceAspectMap.has(Advice.Around)) {
-        adviceAspectMap.get(Advice.Around)?.forEach(aspect => {
-            aspect.execute(target, args);
+            modifiedArgs = aspect.execute(target, args);
         });
     }
 
-    let returnedValue: any;
+    if (adviceAspectMap.has(Advice.Around)) {
+        adviceAspectMap.get(Advice.Around)?.forEach(aspect => {
+            modifiedArgs = aspect.execute(target, args);
+        });
+    }
+
     try {
-        returnedValue = originalMethod.apply(target, args);
+        returnedValue = originalMethod.apply(target, modifiedArgs ?? args);
     } catch (error) {
         if (adviceAspectMap.has(Advice.TryCatch)) {
             adviceAspectMap.get(Advice.TryCatch)?.forEach(aspect => {
@@ -48,7 +50,7 @@ export function proxyFunc(target: any, methodContainer: MethodContainer, ...args
 
     if (adviceAspectMap.has(Advice.AfterReturn)) {
         adviceAspectMap.get(Advice.AfterReturn)?.forEach(aspect => {
-            returnedValue = aspect.execute(target, [returnedValue]);
+            returnedValue = aspect.execute(target, [returnedValue, args]);
         });
     }
 
