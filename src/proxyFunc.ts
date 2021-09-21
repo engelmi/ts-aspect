@@ -48,7 +48,7 @@ export function proxyFunc(target: any, methodContainer: MethodContainer, ...args
 
     if (adviceAspectMap.has(Advice.AfterReturn)) {
         adviceAspectMap.get(Advice.AfterReturn)?.forEach(aspect => {
-            returnedValue = aspect.execute(target, [returnedValue]);
+            returnedValue = aspect.execute(target, [args, returnedValue]);
         });
     }
 

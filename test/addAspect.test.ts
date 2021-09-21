@@ -86,12 +86,12 @@ describe('addAspect', () => {
         calculator.add(1, 2);
 
         expect(aspect.execute).toHaveBeenCalledTimes(1);
-        expect(aspect.execute).toHaveBeenCalledWith(calculator, [3]);
+        expect(aspect.execute).toHaveBeenCalledWith(calculator, [[1, 2], 3]);
     });
 
     it('should return the returned value manipulated by the injected aspect for Advice.AfterReturn', () => {
         aspect.execute.mockImplementationOnce((target: any, args: any[]) => {
-            const returnValue = args[0];
+            const returnValue = args[1];
             return returnValue * 42;
         });
 
