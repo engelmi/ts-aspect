@@ -24,7 +24,7 @@
     "test": "jest",
     "test:cov": "jest --coverage",
     "build": "rimraf ./build && tsc",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",

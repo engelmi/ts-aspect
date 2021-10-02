@@ -7,4 +7,4 @@ export type AspectContext = {
     functionParams: any[];
     returnValue: any;
     error: any;
-}
+};

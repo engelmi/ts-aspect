@@ -95,7 +95,7 @@ describe('addAspect', () => {
         calculator.add(1, 2);
 
         expect(aspect.execute).toHaveBeenCalledTimes(1);
-        
+
         const expectedCtx: AspectContext = {
             target: calculator,
             functionParams: [1, 2],
