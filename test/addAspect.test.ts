@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 
 import { Advice } from '../src/advice.enum';
-import { Aspect } from '../src/aspect.interface';
+import { Aspect, AspectContext } from '../src/aspect.interface';
 import { addAspect } from '../src/addAspect';
 import { CalculatorCls } from './samples/CalculatorCls.sample';
 
@@ -63,7 +63,13 @@ describe('addAspect', () => {
 
             calculator.add(1, 2);
 
-            expect(aspect.execute).toHaveBeenCalledWith(calculator, [1, 2]);
+            const expectedCtx: AspectContext = {
+                target: calculator,
+                functionParams: [1, 2],
+                returnValue: null,
+                error: null,
+            };
+            expect(aspect.execute).toHaveBeenCalledWith(expectedCtx);
         },
     );
 
@@ -73,11 +79,14 @@ describe('addAspect', () => {
         calculator.divide(1, 0);
 
         expect(aspect.execute).toHaveBeenCalledTimes(1);
-        expect(aspect.execute).toHaveBeenCalledWith(calculator, [
-            new Error('Division by zero!'),
-            1,
-            0,
-        ]);
+
+        const expectedCtx: AspectContext = {
+            target: calculator,
+            functionParams: [1, 0],
+            returnValue: null,
+            error: new Error('Division by zero!'),
+        };
+        expect(aspect.execute).toHaveBeenCalledWith(expectedCtx);
     });
 
     it('should pass the returned value to the injected aspect for Advice.AfterReturn', () => {
@@ -86,12 +95,19 @@ describe('addAspect', () => {
         calculator.add(1, 2);
 
         expect(aspect.execute).toHaveBeenCalledTimes(1);
-        expect(aspect.execute).toHaveBeenCalledWith(calculator, [3]);
+
+        const expectedCtx: AspectContext = {
+            target: calculator,
+            functionParams: [1, 2],
+            returnValue: 3,
+            error: null,
+        };
+        expect(aspect.execute).toHaveBeenCalledWith(expectedCtx);
     });
 
     it('should return the returned value manipulated by the injected aspect for Advice.AfterReturn', () => {
-        aspect.execute.mockImplementationOnce((target: any, args: any[]) => {
-            const returnValue = args[0];
+        aspect.execute.mockImplementationOnce((ctx: AspectContext) => {
+            const returnValue = ctx.returnValue;
             return returnValue * 42;
         });
 

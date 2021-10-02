@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 
 import { Advice } from '../../src/advice.enum';
-import { Aspect } from '../../src/aspect.interface';
+import { Aspect, AspectContext } from '../../src/aspect.interface';
 import { UseAspect } from '../../src/decorator/UseAspect';
 
 const beforeAspect = mock<Aspect>();
@@ -60,7 +60,7 @@ describe('UseAspect', () => {
         const mockFn = jest.fn().mockImplementation(() => {});
 
         class SampleAspect implements Aspect {
-            execute(target: any, args: any[]) {
+            execute(ctx: AspectContext) {
                 mockFn();
             }
         }
