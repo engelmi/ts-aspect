@@ -32,21 +32,31 @@ The `aspect` parameter is the actual behavior that extends the `target` code. Wh
 - TryFinally
 
 For example, the AfterReturn enables you to access the return value of the original function and execute additional logic on it (like logging). 
-Finally, the `pointcut` parameter describes the where - so basically, for which functions the `aspect` should be executed. For this a regular expression can be used. 
+Finally, the `pointcut` parameter describes the where - so basically for which functions the `aspect` should be executed. For this a regular expression can be used. 
 
-Also, `ts-aspect` provides a method decorator to attach an aspect to a all instances of a class in a more declarative way:
+If an `aspect` is called, it creates a new context. The context itself is defined as
+```javascript
+export type AspectContext = {
+    target: any;            // injected object
+    functionParams: any[];  // parameters passed to the call of the injected function
+    returnValue: any;       // only set for the AfterReturn-Aspect
+    error: any;             // only set for the TryCatch-Aspect when an error is thrown
+};
+```
+
+Also, `ts-aspect` provides a method decorator to attach an aspect to a all instances of a class in a declarative manner:
 ```javascript
 function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): MethodDecorator
 ```
 
 ## Example
-Assume the following aspect class which simply logs the arguments passed to it to the console: 
+Assume the following aspect class which simply logs the current aspect context passed to it to the console: 
 ```javascript
 class LogAspect implements Aspect{
-    function execute(...args: any): void {
-        console.log(args);
+    function execute(ctx: AspectContext): void {
+        console.log(ctx);
     }
-}
+};
 ```
 
 Also, we create the following `Calculator` class: 
@@ -70,7 +80,7 @@ class Calculator {
     public multiply(a: number, b: number) {
         return a * b;
     }
-}
+};
 ```
 
 
@@ -79,12 +89,21 @@ Now the `logArgsAspect` can be injected to an instance of `Calculator`. In the f
 const calculator = new Calculator();
 addAspectToPointcut(calculator, '.*', Advice.Before, new LogAspect());
 ```
-By defining the `pointcut` as `'.*'`, the `aspect` is run on the execution of any of the functions of the respective `Calculator` instance. Therefore, the following calls should all produce the output `[1, 2]`:
+By defining the `pointcut` as `'.*'`, the `aspect` is executed when calling any of the functions of the respective `Calculator` instance. Therefore, the calls
 ```javascript
 calculator.add(1, 2);
 calculator.substract(1, 2);
 calculator.divide(1, 2);
 calculator.multiply(1, 2);
+```
+should all output
+```javascript
+{
+  target: Calculator {},
+  functionParams: [1, 2],
+  returnValue: null,
+  error: null
+}
 ```
 
 An aspect can also be applied in case an exception occurs in the target code: 
@@ -112,3 +131,4 @@ const calculator = new Calculator();
 calculator.add(1300, 37);
 ```
 The aspect passed to the decorator can be either a class which provides a constructor with no arguments or an instance of an aspect. 
+
