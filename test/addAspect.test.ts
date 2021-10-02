@@ -68,7 +68,7 @@ describe('addAspect', () => {
                 functionParams: [1, 2],
                 returnValue: null,
                 error: null,
-            }
+            };
             expect(aspect.execute).toHaveBeenCalledWith(expectedCtx);
         },
     );
@@ -85,7 +85,7 @@ describe('addAspect', () => {
             functionParams: [1, 0],
             returnValue: null,
             error: new Error('Division by zero!'),
-        }
+        };
         expect(aspect.execute).toHaveBeenCalledWith(expectedCtx);
     });
 
@@ -101,7 +101,7 @@ describe('addAspect', () => {
             functionParams: [1, 2],
             returnValue: 3,
             error: null,
-        }
+        };
         expect(aspect.execute).toHaveBeenCalledWith(expectedCtx);
     });
 

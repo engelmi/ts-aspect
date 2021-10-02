@@ -3,8 +3,8 @@ export interface Aspect {
 }
 
 export type AspectContext = {
-    target: any,
-    functionParams: any[],
-    returnValue: any,
-    error: any,
+    target: any;
+    functionParams: any[];
+    returnValue: any;
+    error: any;
 }

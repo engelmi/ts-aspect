@@ -28,7 +28,7 @@ export function proxyFunc(target: any, methodContainer: MethodContainer, ...args
     } catch (error) {
         if (adviceAspectMap.has(Advice.TryCatch)) {
             adviceAspectMap.get(Advice.TryCatch)?.forEach(aspect => {
-                aspectCtx.error = error
+                aspectCtx.error = error;
                 aspect.execute(aspectCtx);
             });
         } else {
@@ -56,7 +56,7 @@ export function proxyFunc(target: any, methodContainer: MethodContainer, ...args
 
     if (adviceAspectMap.has(Advice.AfterReturn)) {
         adviceAspectMap.get(Advice.AfterReturn)?.forEach(aspect => {
-            aspectCtx.returnValue = returnedValue
+            aspectCtx.returnValue = returnedValue;
             returnedValue = aspect.execute(aspectCtx);
         });
     }
