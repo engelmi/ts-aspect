@@ -43,6 +43,7 @@ export type AspectContext = {
     error: any;             // only set for the TryCatch-Aspect when an error is thrown
 };
 ```
+Aspects await the execution of asynchronous functions - and are asynchronous themselves in this case. This enables an aspect for the advices `Advice.After`, `Advice.AfterReturn` and at the second execution of `Advice.Around` to work with the resolved return value of the injected function. 
 
 Also, `ts-aspect` provides a method decorator to attach an aspect to a all instances of a class in a declarative manner:
 ```javascript
@@ -131,4 +132,3 @@ const calculator = new Calculator();
 calculator.add(1300, 37);
 ```
 The aspect passed to the decorator can be either a class which provides a constructor with no arguments or an instance of an aspect. 
-
