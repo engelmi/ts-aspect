@@ -66,7 +66,7 @@ describe('addAspect', () => {
             const expectedCtx: AspectContext = {
                 target: calculator,
                 functionParams: [1, 2],
-                returnValue: null,
+                returnValue: 3,
                 error: null,
             };
             expect(aspect.execute).toHaveBeenCalledWith(expectedCtx);
@@ -90,6 +90,10 @@ describe('addAspect', () => {
     });
 
     it('should pass the returned value to the injected aspect for Advice.AfterReturn', () => {
+        aspect.execute.mockImplementationOnce((ctx: AspectContext) => {
+            return ctx.returnValue;
+        });
+
         addAspect(calculator, 'add', Advice.AfterReturn, aspect);
 
         calculator.add(1, 2);
@@ -140,5 +144,51 @@ describe('addAspect', () => {
 
     it('should propagate thrown error in original method', () => {
         expect(() => calculator.divide(1, 0)).toThrow(Error);
+    });
+
+    describe('for async functions', () => {
+        class SampleClassAsync {
+            public constructor(public sampleId: number) {
+                this.sampleId = sampleId;
+            }
+
+            public async getSampleIdAsync(): Promise<number> {
+                return this.sampleId;
+            }
+        }
+
+        const aspect = mock<Aspect>();
+        aspect.execute.mockImplementation((ctx: AspectContext) => {
+            return 42;
+        });
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+        });
+
+        it.each([
+            [Advice.Before, 1, 1337, 1337],
+            [Advice.After, 1, 1337, 1337],
+            [Advice.AfterReturn, 1, 1337, 42],
+            [Advice.Around, 2, 1337, 1337],
+            [Advice.TryCatch, 0, 1337, 1337],
+            [Advice.TryFinally, 1, 1337, 1337],
+        ])(
+            'should execute the aspect at the advice %s annotated %d times',
+            async (
+                advice: Advice,
+                numberOfCalls: number,
+                initialSampleId: number,
+                expectedReturnSampleId: number,
+            ) => {
+                const cls = new SampleClassAsync(initialSampleId);
+                addAspect(cls, 'getSampleIdAsync', advice, aspect);
+
+                const sampleId = await cls.getSampleIdAsync();
+
+                expect(aspect.execute).toHaveBeenCalledTimes(numberOfCalls);
+                expect(sampleId).toBe(expectedReturnSampleId);
+            },
+        );
     });
 });

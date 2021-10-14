@@ -56,36 +56,46 @@ describe('UseAspect', () => {
         expect(afterAspect.execute).toHaveBeenCalledTimes(0);
     });
 
-    describe('using classes of an aspect', () => {
-        const mockFn = jest.fn().mockImplementation(() => {});
-
-        class SampleAspect implements Aspect {
-            execute(ctx: AspectContext) {
-                mockFn();
-            }
-        }
-
-        class SampleClass {
-            public constructor(private sampleId: number) {}
-
-            @UseAspect(Advice.Before, SampleAspect)
-            public getSampleId(): number {
-                return this.sampleId;
-            }
-        }
-
-        let sample: SampleClass;
+    describe('for async functions', () => {
+        const aspect = mock<Aspect>();
+        aspect.execute.mockImplementation((ctx: AspectContext) => {
+            return 42;
+        });
 
         beforeEach(() => {
             jest.clearAllMocks();
-
-            sample = new SampleClass(1);
         });
 
-        it('should execute the aspect annotated', () => {
-            sample.getSampleId();
+        it.each([
+            [Advice.Before, 1, 1337, 1337],
+            [Advice.After, 1, 1337, 1337],
+            [Advice.AfterReturn, 1, 1337, 42],
+            [Advice.Around, 2, 1337, 1337],
+            [Advice.TryCatch, 0, 1337, 1337],
+            [Advice.TryFinally, 1, 1337, 1337],
+        ])(
+            'should execute the aspect at the advice %s annotated %d times',
+            async (
+                advice: Advice,
+                numberOfCalls: number,
+                initialSampleId: number,
+                expectedReturnSampleId: number,
+            ) => {
+                class SampleClassAsync {
+                    public constructor(public sampleId: number) {}
 
-            expect(mockFn).toHaveBeenCalledTimes(1);
-        });
+                    @UseAspect(advice, aspect)
+                    public async getSampleIdAsync(): Promise<number> {
+                        return this.sampleId;
+                    }
+                }
+
+                const cls = new SampleClassAsync(initialSampleId);
+                const sampleId = await cls.getSampleIdAsync();
+
+                expect(aspect.execute).toHaveBeenCalledTimes(numberOfCalls);
+                expect(sampleId).toBe(expectedReturnSampleId);
+            },
+        );
     });
 });

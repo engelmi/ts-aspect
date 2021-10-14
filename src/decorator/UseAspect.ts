@@ -1,6 +1,7 @@
+import { types } from 'util';
 import { Advice } from '../advice.enum';
 import { Aspect } from '../aspect.interface';
-import { proxyFunc } from '../proxyFunc';
+import { proxyFunc, asyncProxyFunc } from '../proxyFunc';
 import { getTsAspectProp, setTsAspectProp } from '../TsAspectProperty';
 
 export function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): MethodDecorator {
@@ -24,7 +25,11 @@ export function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): 
             descriptor.value = function (...args: any): any {
                 const tsAspectProp = getTsAspectProp(target);
                 if (tsAspectProp) {
-                    return proxyFunc(this, tsAspectProp[propertyKeyString], ...args);
+                    if (types.isAsyncFunction(originalMethod)) {
+                        return asyncProxyFunc(this, tsAspectProp[propertyKeyString], ...args);
+                    } else {
+                        return proxyFunc(this, tsAspectProp[propertyKeyString], ...args);
+                    }
                 }
                 return originalMethod(...args);
             };
