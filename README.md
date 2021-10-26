@@ -13,6 +13,9 @@ To get started, install `ts-aspect` with npm.
 npm install ts-aspect
 ```
 
+## Using with NestJS
+`ts-aspect` can also be used together with `NestJS`. An example can be seen [here](https://github.com/engelmi/ts-aspect-nestjs-example). 
+
 
 ## Usage
 An aspect can be injected to the `target` class instance or object via
