@@ -44,6 +44,24 @@ describe('UseAspect', () => {
         expect(beforeAspect.execute).toHaveBeenCalledTimes(1);
     });
 
+    it('should instantiate a new object of the aspect class passed as parameter', () => {
+        let executeHasBeenCalled = false;
+        class SomeAspect implements Aspect {
+            execute(ctx: AspectContext) {
+                executeHasBeenCalled = true;
+            }
+        }
+        class AnotherSampleClass {
+            @UseAspect(Advice.Before, SomeAspect)
+            public doIt(): void {}
+        }
+
+        const a = new AnotherSampleClass();
+        a.doIt();
+
+        expect(executeHasBeenCalled).toBe(true);
+    });
+
     it('should execute all aspects annotated', () => {
         sample.setSampleId(1337);
 
@@ -71,7 +89,6 @@ describe('UseAspect', () => {
             [Advice.After, 1, 1337, 1337],
             [Advice.AfterReturn, 1, 1337, 42],
             [Advice.Around, 2, 1337, 1337],
-            [Advice.TryCatch, 0, 1337, 1337],
             [Advice.TryFinally, 1, 1337, 1337],
         ])(
             'should execute the aspect at the advice %s annotated %d times',
@@ -97,5 +114,20 @@ describe('UseAspect', () => {
                 expect(sampleId).toBe(expectedReturnSampleId);
             },
         );
+
+        it('should execute the aspect at the advice TryCatch', async () => {
+            class SampleClassAsync {
+                @UseAspect(Advice.TryCatch, aspect)
+                public async getSampleIdAsync(): Promise<number> {
+                    throw Error('throwing error for TryCatch Advice');
+                }
+            }
+
+            const cls = new SampleClassAsync();
+            const sampleId = await cls.getSampleIdAsync();
+
+            expect(aspect.execute).toHaveBeenCalledTimes(1);
+            expect(sampleId).toBe(null);
+        });
     });
 });
