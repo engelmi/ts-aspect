@@ -23,9 +23,9 @@ export function addAspect(target: any, methodName: string, advice: Advice, aspec
             const tsAspectProp = getTsAspectProp(target);
             if (tsAspectProp) {
                 if (types.isAsyncFunction(originalMethod)) {
-                    return asyncProxyFunc(target, tsAspectProp[methodName], ...args);
+                    return asyncProxyFunc(target, methodName, tsAspectProp[methodName], ...args);
                 } else {
-                    return proxyFunc(target, tsAspectProp[methodName], ...args);
+                    return proxyFunc(target, methodName, tsAspectProp[methodName], ...args);
                 }
             }
             return originalMethod(...args);

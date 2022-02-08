@@ -42,7 +42,17 @@ describe('UseAspect', () => {
         sample.getSampleId();
 
         expect(beforeAspect.execute).toHaveBeenCalledTimes(1);
+
+        const expectedCtx: AspectContext = {
+            target: sample,
+            methodName: 'getSampleId',
+            functionParams: [],
+            returnValue: 1,
+            error: null,
+        };
+        expect(beforeAspect.execute).toHaveBeenCalledWith(expectedCtx);
     });
+
 
     it('should instantiate a new object of the aspect class passed as parameter', () => {
         let executeHasBeenCalled = false;

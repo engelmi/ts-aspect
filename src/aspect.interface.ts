@@ -4,7 +4,7 @@ export interface Aspect {
 
 export type AspectContext = {
     target: any;
-    method: any;
+    methodName: string;
     functionParams: any[];
     returnValue: any;
     error: any;
