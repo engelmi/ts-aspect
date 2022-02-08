@@ -53,7 +53,6 @@ describe('UseAspect', () => {
         expect(beforeAspect.execute).toHaveBeenCalledWith(expectedCtx);
     });
 
-
     it('should instantiate a new object of the aspect class passed as parameter', () => {
         let executeHasBeenCalled = false;
         class SomeAspect implements Aspect {
