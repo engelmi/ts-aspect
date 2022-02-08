@@ -10,6 +10,7 @@ export async function asyncProxyFunc(
     const { originalMethod, adviceAspectMap } = methodContainer;
     const aspectCtx: AspectContext = {
         target: target,
+        method: originalMethod,
         functionParams: args,
         returnValue: null,
         error: null,
@@ -45,6 +46,7 @@ export function proxyFunc(target: any, methodContainer: MethodContainer, ...args
     const { originalMethod, adviceAspectMap } = methodContainer;
     const aspectCtx: AspectContext = {
         target: target,
+        method: originalMethod,
         functionParams: args,
         returnValue: null,
         error: null,

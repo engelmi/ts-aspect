@@ -65,6 +65,7 @@ describe('addAspect', () => {
 
             const expectedCtx: AspectContext = {
                 target: calculator,
+                method: calculator.add,
                 functionParams: [1, 2],
                 returnValue: 3,
                 error: null,
@@ -82,6 +83,7 @@ describe('addAspect', () => {
 
         const expectedCtx: AspectContext = {
             target: calculator,
+            method: calculator.divide,
             functionParams: [1, 0],
             returnValue: null,
             error: new Error('Division by zero!'),
@@ -102,6 +104,7 @@ describe('addAspect', () => {
 
         const expectedCtx: AspectContext = {
             target: calculator,
+            method: calculator.add,
             functionParams: [1, 2],
             returnValue: 3,
             error: null,
