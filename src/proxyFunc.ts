@@ -4,12 +4,14 @@ import { AdviceAspectMap, MethodContainer } from './TsAspectContainer';
 
 export async function asyncProxyFunc(
     target: any,
+    methodName: string,
     methodContainer: MethodContainer,
     ...args: any
 ): Promise<any> {
     const { originalMethod, adviceAspectMap } = methodContainer;
     const aspectCtx: AspectContext = {
         target: target,
+        methodName: methodName,
         functionParams: args,
         returnValue: null,
         error: null,
@@ -41,10 +43,11 @@ export async function asyncProxyFunc(
     return aspectCtx.returnValue;
 }
 
-export function proxyFunc(target: any, methodContainer: MethodContainer, ...args: any): any {
+export function proxyFunc(target: any, methodName: string, methodContainer: MethodContainer, ...args: any): any {
     const { originalMethod, adviceAspectMap } = methodContainer;
     const aspectCtx: AspectContext = {
         target: target,
+        methodName: methodName,
         functionParams: args,
         returnValue: null,
         error: null,
