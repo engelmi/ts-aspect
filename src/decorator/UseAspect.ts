@@ -26,9 +26,19 @@ export function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): 
                 const tsAspectProp = getTsAspectProp(target);
                 if (tsAspectProp) {
                     if (types.isAsyncFunction(originalMethod)) {
-                        return asyncProxyFunc(this, propertyKeyString, tsAspectProp[propertyKeyString], ...args);
+                        return asyncProxyFunc(
+                            this,
+                            propertyKeyString,
+                            tsAspectProp[propertyKeyString],
+                            ...args,
+                        );
                     } else {
-                        return proxyFunc(this, propertyKeyString, tsAspectProp[propertyKeyString], ...args);
+                        return proxyFunc(
+                            this,
+                            propertyKeyString,
+                            tsAspectProp[propertyKeyString],
+                            ...args,
+                        );
                     }
                 }
                 return originalMethod(...args);
