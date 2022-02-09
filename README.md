@@ -108,22 +108,13 @@ should output
   error: null
 }
 ```
-And further function calls 
+And further calls to other functions like 
 ```javascript
 calculator.subtract(1, 2);
 calculator.divide(1, 2);
 calculator.multiply(1, 2);
 ```
-should output something like 
-```javascript
-{
-  target: Calculator {},
-  methodName: '<method name>',  // subtract, divide, multiply
-  functionParams: [1, 2],
-  returnValue: null,
-  error: null
-}
-```
+should result in the same output (except for the changing `methodName`).
 
 An aspect can also be applied in case an exception occurs in the target code: 
 ```javascript
