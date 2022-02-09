@@ -19,7 +19,7 @@ describe('addAspectToPointcut', () => {
         addAspectToPointcut(calculator, 'i', Advice.Before, aspect);
 
         calculator.add(1, 2);
-        calculator.substract(1, 2);
+        calculator.subtract(1, 2);
         calculator.multiply(1, 2);
         calculator.divide(1, 2);
 

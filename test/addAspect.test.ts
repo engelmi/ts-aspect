@@ -50,7 +50,7 @@ describe('addAspect', () => {
         addAspect(calculator, 'add', advice, aspect);
         addAspect(calculator, 'divide', advice, aspect);
 
-        calculator.substract(1, 2);
+        calculator.subtract(1, 2);
         calculator.multiply(1, 2);
 
         expect(aspect.execute).not.toHaveBeenCalled();

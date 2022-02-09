@@ -22,7 +22,7 @@ describe('getPointcutMethods', () => {
             'valueOf',
             'toLocaleString',
             'add',
-            'substract',
+            'subtract',
             'multiply',
             'divide',
         ]);
@@ -33,7 +33,7 @@ describe('getPointcutMethods', () => {
 
         const methods = getPointcutMethods(calculator, '.*');
 
-        expect(methods).toStrictEqual(['add', 'substract', 'multiply', 'divide']);
+        expect(methods).toStrictEqual(['add', 'subtract', 'multiply', 'divide']);
     });
 
     it('returns list of methods from class instance matching pointcut "add"', () => {
