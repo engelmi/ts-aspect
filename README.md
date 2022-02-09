@@ -41,6 +41,7 @@ If an `aspect` is called, it creates a new context. The context itself is define
 ```javascript
 export type AspectContext = {
     target: any;            // injected object
+    methodName: string;     // the name of the injected function
     functionParams: any[];  // parameters passed to the call of the injected function
     returnValue: any;       // only set for the AfterReturn-Aspect
     error: any;             // only set for the TryCatch-Aspect when an error is thrown
@@ -70,7 +71,7 @@ class Calculator {
         return a + b;
     }
 
-    public substract(a: number, b: number) {
+    public subtract(a: number, b: number) {
         return a - b;
     }
 
@@ -93,17 +94,31 @@ Now the `logArgsAspect` can be injected to an instance of `Calculator`. In the f
 const calculator = new Calculator();
 addAspectToPointcut(calculator, '.*', Advice.Before, new LogAspect());
 ```
-By defining the `pointcut` as `'.*'`, the `aspect` is executed when calling any of the functions of the respective `Calculator` instance. Therefore, the calls
+By defining the `pointcut` as `'.*'`, the `aspect` is executed when calling any of the functions of the respective `Calculator` instance. Therefore, a call to
 ```javascript
 calculator.add(1, 2);
-calculator.substract(1, 2);
-calculator.divide(1, 2);
-calculator.multiply(1, 2);
 ```
-should all output
+should output
 ```javascript
 {
   target: Calculator {},
+  methodName: 'add',
+  functionParams: [1, 2],
+  returnValue: null,
+  error: null
+}
+```
+And further function calls 
+```javascript
+calculator.subtract(1, 2);
+calculator.divide(1, 2);
+calculator.multiply(1, 2);
+```
+should output something like 
+```javascript
+{
+  target: Calculator {},
+  methodName: '<method name>',  // subtract, divide, multiply
   functionParams: [1, 2],
   returnValue: null,
   error: null
