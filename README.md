@@ -4,8 +4,7 @@ A simplistic library for **A**spect **O**riented **P**rogramming (AOP) in TypeSc
 
 One application of AOP is the encapsulation of cross-cutting concerns, like logging, and keep the original business logic clean. Although a powerful tool, it should be used with care as it hides logic and complexity. 
 
-![Build Status](https://travis-ci.com/engelmi/ts-aspect.svg?branch=main)
-
+![Build Status](https://github.com/engelmi/ts-aspect/actions/workflows/build.yml/badge.svg)
 
 ## Installation
 To get started, install `ts-aspect` with npm.
