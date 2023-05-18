@@ -4,8 +4,17 @@ import { Advice } from '../../src/advice.enum';
 import { Aspect, AspectContext } from '../../src/aspect.interface';
 import { UseAspect } from '../../src/decorator/UseAspect';
 
-const beforeAspect = mock<Aspect>();
-const afterAspect = mock<Aspect>();
+const beforeAspect = mock<Aspect<number, []>>();
+const afterAspect = mock<Aspect<void, [number]>>();
+
+const throwBeforeAspect = mock<Aspect<void, []>>();
+const throwAfterAspect = mock<Aspect<void, []>>();
+
+class TestAspect implements Aspect {
+    execute(ctx: AspectContext<void, [number]>) {
+        throw new Error('Method not implemented.');
+    }
+}
 
 class SampleClass {
     public constructor(private sampleId: number) {}
@@ -22,8 +31,8 @@ class SampleClass {
         this.sampleId = sampleId;
     }
 
-    @UseAspect(Advice.Before, beforeAspect)
-    @UseAspect(Advice.After, afterAspect)
+    @UseAspect(Advice.Before, throwBeforeAspect)
+    @UseAspect(Advice.After, throwAfterAspect)
     public throwError(): void {
         throw new Error('this is expected!');
     }
@@ -43,7 +52,7 @@ describe('UseAspect', () => {
 
         expect(beforeAspect.execute).toHaveBeenCalledTimes(1);
 
-        const expectedCtx: AspectContext = {
+        const expectedCtx: AspectContext<number, []> = {
             target: sample,
             methodName: 'getSampleId',
             functionParams: [],
@@ -55,8 +64,8 @@ describe('UseAspect', () => {
 
     it('should instantiate a new object of the aspect class passed as parameter', () => {
         let executeHasBeenCalled = false;
-        class SomeAspect implements Aspect {
-            execute(ctx: AspectContext) {
+        class SomeAspect implements Aspect<void, []> {
+            execute(ctx: AspectContext<void, []>) {
                 executeHasBeenCalled = true;
             }
         }
@@ -79,13 +88,13 @@ describe('UseAspect', () => {
 
     it('should not execute the aspect annotated with Advice.After if an error is thrown in method', () => {
         expect(() => sample.throwError()).toThrow(Error);
-        expect(beforeAspect.execute).toHaveBeenCalledTimes(1);
-        expect(afterAspect.execute).toHaveBeenCalledTimes(0);
+        expect(throwBeforeAspect.execute).toHaveBeenCalledTimes(1);
+        expect(throwAfterAspect.execute).toHaveBeenCalledTimes(0);
     });
 
     describe('for async functions', () => {
-        const aspect = mock<Aspect>();
-        aspect.execute.mockImplementation((ctx: AspectContext) => {
+        const aspect = mock<Aspect<number, []>>();
+        aspect.execute.mockImplementation((ctx: AspectContext<number, []>) => {
             return 42;
         });
 

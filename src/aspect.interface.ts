@@ -1,11 +1,11 @@
-export interface Aspect {
-    execute(ctx: AspectContext): any;
+export interface Aspect<Data = any, Args = any> {
+    execute(ctx: AspectContext<Data, Args>): any;
 }
 
-export type AspectContext = {
+export type AspectContext<Data, Args> = {
     target: any;
     methodName: string;
-    functionParams: any[];
-    returnValue: any;
+    functionParams: Args;
+    returnValue: Data | null;
     error: any;
 };
