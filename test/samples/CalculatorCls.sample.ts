@@ -18,3 +18,9 @@ export class CalculatorCls {
         return a / b;
     }
 }
+
+export class AdvancedCalculatorCls extends CalculatorCls {
+    sum(arr: number[]): number {
+        return arr.reduce((acc, val) => acc + val, 0);
+    }
+}
