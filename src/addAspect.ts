@@ -4,7 +4,12 @@ import { Aspect } from './aspect.interface';
 import { proxyFunc, asyncProxyFunc } from './proxyFunc';
 import { setTsAspectProp, getTsAspectProp } from './TsAspectProperty';
 
-export function addAspect(target: any, methodName: string, advice: Advice, aspect: Aspect): void {
+export function addAspect<Data, Args>(
+    target: any,
+    methodName: string,
+    advice: Advice,
+    aspect: Aspect<Data, Args>,
+): void {
     let tsAspectProp = getTsAspectProp(target);
     if (!tsAspectProp) {
         tsAspectProp = {};
@@ -16,7 +21,7 @@ export function addAspect(target: any, methodName: string, advice: Advice, aspec
 
         tsAspectProp[methodName] = {
             originalMethod,
-            adviceAspectMap: new Map<Advice, Aspect[]>(),
+            adviceAspectMap: new Map<Advice, Aspect<Data, Args>[]>(),
         };
 
         const wrapperFunc = function (...args: any): any {

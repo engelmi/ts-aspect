@@ -7,7 +7,7 @@ import { CalculatorCls } from './samples/CalculatorCls.sample';
 
 describe('addAspect', () => {
     let calculator: CalculatorCls;
-    const aspect = mock<Aspect>();
+    const aspect = mock<Aspect<number, [number, number]>>();
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -63,7 +63,7 @@ describe('addAspect', () => {
 
             calculator.add(1, 2);
 
-            const expectedCtx: AspectContext = {
+            const expectedCtx: AspectContext<number, [number, number]> = {
                 target: calculator,
                 methodName: 'add',
                 functionParams: [1, 2],
@@ -81,7 +81,7 @@ describe('addAspect', () => {
 
         expect(aspect.execute).toHaveBeenCalledTimes(1);
 
-        const expectedCtx: AspectContext = {
+        const expectedCtx: AspectContext<number, [number, number]> = {
             target: calculator,
             methodName: 'divide',
             functionParams: [1, 0],
@@ -92,7 +92,7 @@ describe('addAspect', () => {
     });
 
     it('should pass the returned value to the injected aspect for Advice.AfterReturn', () => {
-        aspect.execute.mockImplementationOnce((ctx: AspectContext) => {
+        aspect.execute.mockImplementationOnce((ctx: AspectContext<number, [number, number]>) => {
             return ctx.returnValue;
         });
 
@@ -102,7 +102,7 @@ describe('addAspect', () => {
 
         expect(aspect.execute).toHaveBeenCalledTimes(1);
 
-        const expectedCtx: AspectContext = {
+        const expectedCtx: AspectContext<number, [number, number]> = {
             target: calculator,
             methodName: 'add',
             functionParams: [1, 2],
@@ -113,8 +113,11 @@ describe('addAspect', () => {
     });
 
     it('should return the returned value manipulated by the injected aspect for Advice.AfterReturn', () => {
-        aspect.execute.mockImplementationOnce((ctx: AspectContext) => {
+        aspect.execute.mockImplementationOnce((ctx: AspectContext<number, [number, number]>) => {
             const returnValue = ctx.returnValue;
+            if (returnValue === null) {
+                return null;
+            }
             return returnValue * 42;
         });
 
@@ -126,8 +129,8 @@ describe('addAspect', () => {
     });
 
     it('should execute all injected aspects for the same advice and pointcut', () => {
-        const secondAspect = mock<Aspect>();
-        const thirdAspect = mock<Aspect>();
+        const secondAspect = mock<Aspect<number, [number, number]>>();
+        const thirdAspect = mock<Aspect<number, [number, number]>>();
 
         addAspect(calculator, 'add', Advice.Before, aspect);
 
@@ -160,8 +163,8 @@ describe('addAspect', () => {
             }
         }
 
-        const aspect = mock<Aspect>();
-        aspect.execute.mockImplementation((ctx: AspectContext) => {
+        const aspect = mock<Aspect<number, [number, number]>>();
+        aspect.execute.mockImplementation((ctx: AspectContext<number, [number, number]>) => {
             return 42;
         });
 

@@ -2,14 +2,14 @@ import { Advice } from './advice.enum';
 import { AspectContext } from './aspect.interface';
 import { AdviceAspectMap, MethodContainer } from './TsAspectContainer';
 
-export async function asyncProxyFunc(
+export async function asyncProxyFunc<Data, Args>(
     target: any,
     methodName: string,
-    methodContainer: MethodContainer,
+    methodContainer: MethodContainer<Data, Args>,
     ...args: any
 ): Promise<any> {
     const { originalMethod, adviceAspectMap } = methodContainer;
-    const aspectCtx: AspectContext = {
+    const aspectCtx: AspectContext<Data, Args> = {
         target: target,
         methodName: methodName,
         functionParams: args,
@@ -43,14 +43,14 @@ export async function asyncProxyFunc(
     return aspectCtx.returnValue;
 }
 
-export function proxyFunc(
+export function proxyFunc<Data, Args>(
     target: any,
     methodName: string,
-    methodContainer: MethodContainer,
+    methodContainer: MethodContainer<Data, Args>,
     ...args: any
 ): any {
     const { originalMethod, adviceAspectMap } = methodContainer;
-    const aspectCtx: AspectContext = {
+    const aspectCtx: AspectContext<Data, Args> = {
         target: target,
         methodName: methodName,
         functionParams: args,
@@ -84,9 +84,9 @@ export function proxyFunc(
     return aspectCtx.returnValue;
 }
 
-function applyPreExecutionAspects(
-    aspectCtx: AspectContext,
-    adviceAspectMap: AdviceAspectMap,
+function applyPreExecutionAspects<Data, Args>(
+    aspectCtx: AspectContext<Data, Args>,
+    adviceAspectMap: AdviceAspectMap<Data, Args>,
 ): void {
     if (adviceAspectMap.has(Advice.Before)) {
         adviceAspectMap.get(Advice.Before)?.forEach(aspect => {
@@ -100,9 +100,9 @@ function applyPreExecutionAspects(
     }
 }
 
-function applyPostExecutionAspects(
-    aspectCtx: AspectContext,
-    adviceAspectMap: AdviceAspectMap,
+function applyPostExecutionAspects<Data, Args>(
+    aspectCtx: AspectContext<Data, Args>,
+    adviceAspectMap: AdviceAspectMap<Data, Args>,
 ): void {
     if (adviceAspectMap.has(Advice.Around)) {
         adviceAspectMap.get(Advice.Around)?.forEach(aspect => {
