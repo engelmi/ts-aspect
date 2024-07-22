@@ -1,11 +1,16 @@
 import { types } from 'util';
+import { getTsAspectProp, setTsAspectProp } from '../TsAspectProperty';
 import { Advice } from '../advice.enum';
 import { Aspect } from '../aspect.interface';
-import { proxyFunc, asyncProxyFunc } from '../proxyFunc';
-import { getTsAspectProp, setTsAspectProp } from '../TsAspectProperty';
+import { asyncProxyFunc, proxyFunc } from '../proxyFunc';
 
-export function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): MethodDecorator {
-    return function (target, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+export function UseAspect<T extends (...args: any[]) => any>(
+    advice: Advice,
+    aspect:
+        | Aspect<Awaited<ReturnType<T>>, Parameters<T>>
+        | (new () => Aspect<Awaited<ReturnType<T>>, Parameters<T>>),
+) {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
         let tsAspectProp = getTsAspectProp(target);
         if (!tsAspectProp) {
             tsAspectProp = {};
@@ -19,7 +24,7 @@ export function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): 
 
             tsAspectProp[propertyKeyString] = {
                 originalMethod,
-                adviceAspectMap: new Map<Advice, Aspect[]>(),
+                adviceAspectMap: new Map<Advice, Aspect<Awaited<ReturnType<T>>, Parameters<T>>[]>(),
             };
 
             descriptor.value = function (...args: any): any {
@@ -41,8 +46,8 @@ export function UseAspect(advice: Advice, aspect: Aspect | (new () => Aspect)): 
                         );
                     }
                 }
-                return originalMethod(...args);
-            };
+                return originalMethod?.(...args);
+            } as T;
         }
 
         const { adviceAspectMap } = tsAspectProp[propertyKeyString];

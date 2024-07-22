@@ -7,7 +7,7 @@ import { CalculatorCls } from './samples/CalculatorCls.sample';
 
 describe('addAspectToPointcut', () => {
     let calculator: CalculatorCls;
-    const aspect = mock<Aspect>();
+    const aspect = mock<Aspect<number, [number, number]>>();
 
     beforeEach(() => {
         jest.clearAllMocks();
